@@ -32,7 +32,27 @@ pipeline {
         {
             steps {
                 echo "Deploying the project.."
+                bat "mvn deploy"
             }
+        }
+    }
+}
+post {
+        always {
+            // Archive the artifacts, e.g., JAR/WAR files
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+
+            // Publish test results
+            junit 'target/surefire-reports/*.xml'
+
+            // Clean up workspace
+            cleanWs()
+        }
+        success {
+            echo 'Build was successful!'
+        }
+        failure {
+            echo 'Build failed!'
         }
     }
 }
