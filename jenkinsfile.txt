@@ -2,7 +2,18 @@ pipeline{
 agent any
 stages
 {
-
+stage('Test') {
+            steps {
+                script {
+                    try {
+                        bat 'mvn -X test'
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
 stage('Test')
 {
 steps{
