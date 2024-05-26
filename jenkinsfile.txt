@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        MAVEN_HOME = MAVEN_HOME // Ensure you have a Maven tool configured in Jenkins
+        MAVEN_HOME = 'MAVEN_HOME' // Ensure you have a Maven tool configured in Jenkins
         PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
     }
 
