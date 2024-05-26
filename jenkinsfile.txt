@@ -3,13 +3,13 @@ pipeline {
 
     environment {
         MAVEN_HOME = MAVEN_HOME // Ensure you have a Maven tool configured in Jenkins
-        PATH = "D:\apache-maven-3.9.6-bin\apache-maven-3.9.6"
+        PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://your-repository-url.git'
+                git 'https://github.com/kpanj/ProjectLJShopSite.git'
             }
         }
         
@@ -44,7 +44,6 @@ pipeline {
             steps {
                 script {
                     // Deploy the application
-                    // This step is optional and can be configured as per your deployment strategy
                     sh 'mvn deploy'
                 }
             }
