@@ -1,71 +1,38 @@
 pipeline {
     agent any
-
-    environment {
-        MAVEN_HOME = 'MAVEN_HOME' // Ensure you have a Maven tool configured in Jenkins
-        PATH = "${env.MAVEN_HOME}/bin:${env.PATH}"
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                git url: 'https://github.com/kpanj/ProjectLJShopSite.git', branch: 'main'
-            }
-        }
-        
-        stage('Build') {
-            steps {
-                script {
-                    // Clean and compile the project
-                    sh 'mvn clean compile'
-                }
-            }
-        }
-        
+    stages
+    {
         stage('Test') {
             steps {
                 script {
-                    // Run the tests
-                    sh 'mvn test'
+                    try {
+                        bat 'mvn -X test'
+                    } catch (Exception e) {
+                        echo "Build failed: ${e.message}"
+                        currentBuild.result = 'FAILURE'
+                    }
                 }
             }
         }
-        
-        stage('Package') {
+        stage('Test1')
+        {
             steps {
-                script {
-                    // Package the application
-                    sh 'mvn package'
-                }
+                echo "Testing the Code.."
+                bat "mvn test"
             }
         }
-        
-        stage('Deploy') {
+        stage('Compile')
+        {
             steps {
-                script {
-                    // Deploy the application
-                    sh 'mvn deploy'
-                }
+                echo "Testing the project.."
+                bat "mvn compile"
             }
         }
-    }
-
-    post {
-        always {
-            // Archive the artifacts, e.g., JAR/WAR files
-            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
-
-            // Publish test results
-            junit 'target/surefire-reports/*.xml'
-
-            // Clean up workspace
-            cleanWs()
-        }
-        success {
-            echo 'Build was successful!'
-        }
-        failure {
-            echo 'Build failed!'
+        stage('Deploy')
+        {
+            steps {
+                echo "Deploying the project.."
+            }
         }
     }
 }
