@@ -14,7 +14,7 @@ stage('Test') {
                 }
             }
         }
-stage('Test')
+stage('Test1')
 {
 steps{
 echo "Testing the Code.."
