@@ -1,38 +1,72 @@
-pipeline{
-agent any
-stages
-{
-stage('Test') {
+pipeline {
+    agent any
+
+    environment {
+        MAVEN_HOME = MAVEN_HOME // Ensure you have a Maven tool configured in Jenkins
+        PATH = "D:\apache-maven-3.9.6-bin\apache-maven-3.9.6"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://your-repository-url.git'
+            }
+        }
+        
+        stage('Build') {
             steps {
                 script {
-                    try {
-                        bat 'mvn -X test'
-                    } catch (Exception e) {
-                        echo "Build failed: ${e.message}"
-                        currentBuild.result = 'FAILURE'
-                    }
+                    // Clean and compile the project
+                    sh 'mvn clean compile'
                 }
             }
         }
-stage('Test1')
-{
-steps{
-echo "Testing the Code.."
-bat "mvn test"
-}
-}
-stage('Compile')
-{
-steps{
-echo "Testing the project.."
-bat "mvn compile"
-}
-}
-stage('Deploy')
-{
-steps{
-echo "Deploying the project.."
-}
-}
-}
+        
+        stage('Test') {
+            steps {
+                script {
+                    // Run the tests
+                    sh 'mvn test'
+                }
+            }
+        }
+        
+        stage('Package') {
+            steps {
+                script {
+                    // Package the application
+                    sh 'mvn package'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                script {
+                    // Deploy the application
+                    // This step is optional and can be configured as per your deployment strategy
+                    sh 'mvn deploy'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Archive the artifacts, e.g., JAR/WAR files
+            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+
+            // Publish test results
+            junit 'target/surefire-reports/*.xml'
+
+            // Clean up workspace
+            cleanWs()
+        }
+        success {
+            echo 'Build was successful!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
 }
