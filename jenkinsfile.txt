@@ -2,19 +2,14 @@ pipeline {
     agent any
     stages
     {
-        stage('Test') {
+        stage('Build')
+        {
             steps {
-                script {
-                    try {
-                        bat 'mvn -X test'
-                    } catch (Exception e) {
-                        echo "Build failed: ${e.message}"
-                        currentBuild.result = 'FAILURE'
-                    }
-                }
+                echo "Building the Code.."
+                bat "mvn clean"
             }
         }
-        stage('Test1')
+        stage('Test')
         {
             steps {
                 echo "Testing the Code.."
@@ -28,6 +23,11 @@ pipeline {
                 bat "mvn compile"
             }
         }
-        
+        stage('Deploy')
+        {
+            steps {
+                echo "Deploying the project.."
+            }
+        }
     }
 }
